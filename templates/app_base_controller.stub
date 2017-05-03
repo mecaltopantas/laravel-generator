@@ -1,0 +1,110 @@
+<?php
+
+namespace $NAMESPACE_APP$\Http\Controllers;
+
+use InfyOm\Generator\Utils\ResponseUtil;
+use Response;
+
+/**
+ * @SWG\Swagger(
+ *   basePath="/$API_PREFIX$/$API_VERSION$",
+ *   @SWG\Info(
+ *     title="Laravel Generator APIs",
+ *     version="1.0.0",
+ *   )
+ * )
+ * This class should be parent class for other API controllers
+ * Class AppBaseController
+ */
+class AppBaseController extends Controller
+{
+    public function sendResponse($result, $message)
+    {
+        return Response::json(ResponseUtil::makeResponse($message, $result));
+    }
+
+    public function sendError($error, $code = 404)
+    {
+        return Response::json(ResponseUtil::makeError($error), $code);
+    }
+
+    protected function applyFilter($query,$filter_columns)
+    {
+	$fc = "";
+	$query->where(function($w) use ($filter_columns, $fc)
+	{
+	    foreach ($filter_columns as $key => $fc)
+	    {
+
+		$value	 = @$fc['value'];
+		$type	 = @$fc['type'];
+
+		if ($value == '' || $type == '')
+		    continue;
+
+		if ($type == 'between')
+		    continue;
+
+		switch ($type)
+		{
+		    default:
+			if ($key && $type && $value)
+			    $w->where($key, $type, $value);
+			break;
+		    case 'like':
+		    case 'not like':
+			$value = '%' . $value . '%';
+			if ($key && $type && $value)
+			    $w->where($key, $type, $value);
+			break;
+		    case 'in':
+		    case 'not in':
+			if ($value)
+			{
+			    $value = explode(',', $value);
+			    if ($key && $value)
+				$w->whereIn($key, $value);
+			}
+			break;
+		}
+	    }
+	});
+
+	foreach ($filter_columns as $key => $fc)
+	{
+	    $value	 = @$fc['value'];
+	    $type	 = @$fc['type'];
+	    $sorting = @$fc['sorting'];
+
+	    if ($sorting != '')
+	    {
+		if ($key)
+		{
+		    $query->orderby($key, $sorting);
+		    $filter_is_orderby = true;
+		}
+	    }
+
+	    if ($type == 'between')
+	    {
+		if ($key && $value)
+		    $query->whereBetween($key, $value);
+	    }else
+	    {
+		continue;
+	    }
+	}
+
+    }
+
+    protected function applyQueryFilter($query,$filter_columns,$value)
+    {
+	$query->where(function($w) use ($filter_columns, $value)
+	    {
+		foreach ($filter_columns as $filter_column)
+		{
+		    $w->orwhere($filter_column, "like", "%" . $value . "%");
+		}
+	    });
+    }
+}

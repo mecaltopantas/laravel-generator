@@ -1,0 +1,53 @@
+[
+    {
+	"name": "id",
+	"dbType": "increments",
+	"htmlType": "",
+	"validations": "",
+	"searchable": true,
+	"fillable": false,
+	"primary": true,
+	"inForm": false,
+	"inIndex": false
+    },
+    {
+	"name": "name",
+	"dbType": "string",
+	"htmlType": "text",
+	"validations": "required",
+	"searchable": true
+    },
+    {
+	"name": "category_short",
+	"dbType": "string",
+	"htmlType": "select,foreign:{table}cars"
+    },
+    {
+	"name": "car_id",
+	"dbType": "integer:unsigned:foreign,cars,id",
+	"htmlType": "text",
+	"relation": "1tm,Car,car_id,id"
+    },
+    {
+	"name": "created_at",
+	"dbType": "timestamp",
+	"htmlType": "",
+	"validations": "",
+	"searchable": true,
+	"fillable": false,
+	"primary": false,
+	"inForm": false,
+	"inIndex": false
+    },
+    {
+	"name": "updated_at",
+	"dbType": "timestamp",
+	"htmlType": "",
+	"validations": "",
+	"searchable": true,
+	"fillable": false,
+	"primary": false,
+	"inForm": false,
+	"inIndex": false
+    }
+]
