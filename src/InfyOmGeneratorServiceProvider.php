@@ -36,6 +36,10 @@ class InfyOmGeneratorServiceProvider extends ServiceProvider
         $this->publishes([
             $configPath => config_path('infyom/laravel_generator.php'),
         ]);
+        
+        $this->publishes([
+            __DIR__.'/../assets' => public_path('vendor/marifetler/assets'),
+        ], 'public');
     }
 
     /**
